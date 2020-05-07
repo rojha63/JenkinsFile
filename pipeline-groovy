@@ -2,7 +2,7 @@ import org.apache.commons.*
 def repolist(){
     def csvData = readCSV file: '/var/lib/jenkins/workspace/Auto_pipeline@script/control.csv' ,format: CSVFormat.DEFAULT.withHeader()
     def en=csvData[0].get('env')
-    echo 'Env is: ' + env
+    echo 'Env is: ' + en
     }
 pipeline {
     agent any
