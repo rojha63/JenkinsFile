@@ -51,7 +51,7 @@ pipeline {
             steps { 
                script {
                     def buildenv = repolist() 
-                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker build -f /var/lib/jenkins/workspace/Auto_pipeline/Dockerfile -t myapp .', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'sudo docker build -f /var/lib/jenkins/workspace/Auto_pipeline/Dockerfile -t myapp .', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
                 echo 'This is a minimal pipeline.'
                 }
                 }
@@ -60,7 +60,7 @@ pipeline {
             steps {
                script {
                     def buildenv = repolist()
-                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker run -p 8090:8080 -d myapp', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'sudo docker run -p 8090:8080 -d myapp', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
                 echo 'This is a minimal pipeline.'
             }   
             }
