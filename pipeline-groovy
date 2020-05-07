@@ -1,6 +1,5 @@
-import org.apache.commons.csv.*
 def repolist(){
-    def csvData = readCSV file: 'control.csv' ,format: CSVFormat.DEFAULT.withHeader()
+    def csvData = readCSV file: 'control.csv'
     def en=csvData[0].get('env')
     echo 'Env is: ' + env
     }
