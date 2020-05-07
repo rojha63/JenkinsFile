@@ -47,21 +47,39 @@ pipeline {
                 echo 'This is a minimal pipeline.'
             }
             }
-        stage ('Docker Image') {
-            steps { 
-               script {
-                    def buildenv = repolist() 
-                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'sudo docker build -f /home/rakesh/Dockerfile -t myapp .', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-                echo 'This is a minimal pipeline.'
-                }
-                }
-            }    
-         stage ('Docker Create Cont') {
+        stage ('Image Build') {
+            steps {
+                sh 'docker build -f /var/lib/jenkins/workspace/Auto_pipeline/Dockerfile -t rojha63/myapp1 .'
+                echo 'Docker Image Built'
+            }
+            }
+        stage ('Login to DockerHub') {
+            steps {
+                sh 'docker login --username=rojha63 --password=Devops2726'
+                echo 'Docker Login Successful'
+            }
+            }
+        stage ('Image Push to DockerHub') {
+            steps {
+                sh 'docker push rojha63/myapp1'
+                echo 'Docker Image Pushed'
+            }
+            }
+        stage ('Docker Pull') {
             steps {
                script {
                     def buildenv = repolist()
-                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'sudo docker run -p 8080:8080 -d myapp', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-                echo 'This is a minimal pipeline.'
+                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'sudo docker pull rojha63/myapp1', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                echo 'Docker Image Pulled'
+            }   
+            }
+        }    
+        stage ('Docker Create Cont') {
+            steps {
+               script {
+                    def buildenv = repolist()
+                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'sudo docker run -p 8080:8080 -d rojha63/myapp1', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                echo 'Container Created'
             }   
             }
         }
