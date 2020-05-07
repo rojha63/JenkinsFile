@@ -1,9 +1,10 @@
-pipeline {
-    def repolist(){
-        def csvData = readCSV file: 'control.csv' ,format: CSVFormat.DEFAULT.withHeader()
-        def en=csvData[0].get('env')
-        echo 'Env is: ' + env
+import org.apache.commons.csv.*
+def repolist(){
+    def csvData = readCSV file: 'control.csv' ,format: CSVFormat.DEFAULT.withHeader()
+    def en=csvData[0].get('env')
+    echo 'Env is: ' + env
     }
+pipeline {
     agent any
     tools {
         jdk 'myjava'
