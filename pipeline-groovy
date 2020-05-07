@@ -1,6 +1,8 @@
-def csvData = readCSV file: 'control.csv' ,format: CSVFormat.DEFAULT.withHeader()
-def en=csvData[0].get('env')
-echo 'Env is: ' + env 
+def repolist(){
+    def csvData = readCSV file: 'control.csv' ,format: CSVFormat.DEFAULT.withHeader()
+    def en=csvData[0].get('env')
+    echo 'Env is: ' + env
+    }
 pipeline {
     agent any
     tools {
