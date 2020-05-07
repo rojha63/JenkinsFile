@@ -47,6 +47,12 @@ pipeline {
                 echo 'This is a minimal pipeline.'
             }
             }
+        stage ('Docker PS') {
+            steps {
+                sh 'docker ps'
+                echo 'Docker PS'
+            }
+            }    
         stage ('Image Build') {
             steps {
                 sh 'docker build -f /var/lib/jenkins/workspace/Auto_pipeline/Dockerfile -t rojha63/myapp1 .'
