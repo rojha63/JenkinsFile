@@ -36,6 +36,9 @@ pipeline {
             }
         stage ('Build') {
             steps {
+                script {
+                    repolist()
+                    }
                 sh 'mvn install'
                 echo 'This is a minimal pipeline.'
             }
