@@ -1,4 +1,7 @@
 pipeline {
+    def csvData = readCSV file: 'control.csv' ,format: CSVFormat.Default.withHeader()
+    def en=csvData[0].get('env')
+    echo 'Env is: ' + env 
     agent any
     tools {
         jdk 'myjava'
