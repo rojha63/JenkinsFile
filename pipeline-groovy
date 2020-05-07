@@ -3,7 +3,12 @@ def repolist(){
     def csvData = readCSV file: '/var/lib/jenkins/workspace/Auto_pipeline@script/control.csv' ,format: CSVFormat.DEFAULT.withHeader()
     def en=csvData[0].get('env')
     echo 'Env is: ' + en
-    return en
+    if (en == 'dev') {
+        buildenv = 'docker-host'
+      } else if (en == 'prod') {
+        buildenv = 'prod'
+      } 
+      return buildenv
     }
 pipeline {
     agent any
@@ -45,20 +50,21 @@ pipeline {
         stage ('Docker Image') {
             steps { 
                script {
-                    def enb = repolist()
-                    } 
-                if (enb == 'dev') { 
-                echo 'Building in Dev'
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'docker-host', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker build -f /var/lib/jenkins/workspace/Auto_pipeline/Dockerfile -t myapp .', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                    def buildenv = repolist() 
+                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker build -f /var/lib/jenkins/workspace/Auto_pipeline/Dockerfile -t myapp .', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
                 echo 'This is a minimal pipeline.'
+                }
                 }
             }    
         }
          stage ('Docker Create Cont') {
             steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'docker-host', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker run -p 8090:8080 -d myapp', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+               script {
+                    def buildenv = repolist()
+                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker run -p 8090:8080 -d myapp', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
                 echo 'This is a minimal pipeline.'
-            }    
+            }   
+            }
         }
     }
 }
