@@ -1,4 +1,4 @@
-def csvData = readCSV file: 'control.csv' ,format: CSVFormat.Default.withHeader()
+def csvData = readCSV file: 'control.csv' ,format: CSVFormat.DEFAULT.withHeader()
 def en=csvData[0].get('env')
 echo 'Env is: ' + env 
 pipeline {
