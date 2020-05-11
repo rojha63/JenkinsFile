@@ -1,17 +1,29 @@
 pipeline {
     agent any
+     tools {
+   jdk 'jdk8'
+   maven 'maven3'
+  }
         stages {
-        stage('test java installation') {
+          stage('SCM Checkout'){
             steps {
-                sh 'java -version'
-                sh 'which java'
+                git branch: 'master', credentialsId: 'github-login', poll: false, url: 'https://github.com/Shashankmishra1989/hello-world.git'            
+                
             }
         }
-        stage('test maven installation') {
+        stage ('Compile Stage') {
             steps {
-                sh 'mvn -version'
-                sh 'which mvn'
+                sh 'mvn clean compile'
+                echo 'Build Compile Successful'
+                }
             }
-        }
+        stage ('Build') {
+            steps {
+                sh 'mvn install'
+                echo 'This is a minimal pipeline.'
+            }
+            }
+        
     }
 }
+
