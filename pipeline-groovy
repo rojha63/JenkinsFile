@@ -16,7 +16,7 @@ pipeline {
         stages {
           stage('SCM Checkout'){
             steps {
-                git 'https://github.com/Shashankmishra1989/hello-world.git'            
+                git branch: 'master', crendentialsId: 'github-login', poll: false, url: 'https://github.com/Shashankmishra1989/hello-world.git'            
                 
             }
         }
