@@ -1,46 +1,21 @@
-import org.apache.commons.*
-def repolist(){
-    def csvData = readCSV file: '/var/lib/jenkins/workspace/Auto_pipeline@script/control.csv' ,format: CSVFormat.DEFAULT.withHeader()
-    def en=csvData[0].get('env')
-    echo 'Env is: ' + en
-    if (en == 'dev') {
-        buildenv = 'docker-host'
-      } else if (en == 'prod') {
-        buildenv = 'prod'
-      } 
-      return buildenv
-    }
-def mvn_version = 'M3'
-withEnv( ["PATH+MAVEN=${tool mvn_version}/bin"] ) {
-  //sh "mvn clean package"
-}
-    
-    
 pipeline {
     agent any
-     tools {
-   jdk 'jdk8'
-   maven 'maven3'
-  }
-        stages {
-          stage('SCM Checkout'){
+    tools {
+        jdk 'jdk8'
+        maven 'maven3'
+    }
+    stages {
+        stage('test java installation') {
             steps {
-                git branch: 'master', credentialsId: 'github-login', poll: false, url: 'https://github.com/Shashankmishra1989/hello-world.git'            
-                
+                sh 'java -version'
+                sh 'which java'
             }
         }
-        stage ('Compile Stage') {
+        stage('test maven installation') {
             steps {
-                sh 'mvn clean compile'
-                echo 'Build Compile Successful'
-                }
+                sh 'mvn -version'
+                sh 'which mvn'
             }
-        stage ('Build') {
-            steps {
-                sh 'mvn install'
-                echo 'This is a minimal pipeline.'
-            }
-            }
-        
+        }
     }
 }
