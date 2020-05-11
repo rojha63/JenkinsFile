@@ -13,6 +13,9 @@ def repolist(){
     }
 pipeline {
     agent any
+     tools {
+    maven 'M3'
+  }
         stages {
           stage('SCM Checkout'){
             steps {
