@@ -1,20 +1,9 @@
-import org.apache.commons.*
-def repolist(){
-    def csvData = readCSV file: '/var/lib/jenkins/workspace/Auto_pipeline@script/control.csv' ,format: CSVFormat.DEFAULT.withHeader()
-    def en=csvData[0].get('env')
-    echo 'Env is: ' + en
-    if (en == 'dev') {
-        buildenv = 'docker-host'
-      } else if (en == 'prod') {
-        buildenv = 'prod'
-      } 
-      return buildenv
-    }
+
 pipeline {
     agent any
     tools {
-        jdk 'myjava'
-        maven 'mymaven'
+        jdk 'jdk8'
+        maven 'maven3'
     }
     stages {
         stage('test java installation') {
@@ -27,66 +16,6 @@ pipeline {
             steps {
                 sh 'mvn -version'
                 sh 'which mvn'
-            }
-        }
-         stage('SCM Checkout'){
-            steps {
-                git 'https://github.com/Shashankmishra1989/hello-world.git'            
-                
-            }
-        }
-        stage ('Compile Stage') {
-            steps {
-                sh 'mvn clean compile'
-                echo 'Build Compile Successful'
-                }
-            }
-        stage ('Build') {
-            steps {
-                sh 'mvn install'
-                echo 'This is a minimal pipeline.'
-            }
-            }
-        stage ('Docker PS') {
-            steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'docker-host', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker ps', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-                echo 'Docker PS'
-            }
-            }    
-        stage ('Image Build') {
-            steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'docker-host', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker build -f /var/lib/jenkins/workspace/Auto_pipeline/Dockerfile -t rojha63/myapp1 .', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-                echo 'Docker Image Built'
-            }
-            }
-        stage ('Login to DockerHub') {
-            steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'docker-host', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker login --username=rojha63 --password=Devops2726', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-                echo 'Docker Login Successful'
-            }
-            }
-        stage ('Image Push to DockerHub') {
-            steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'docker-host', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker push rojha63/myapp1', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-                echo 'Docker Image Pushed'
-            }
-            }
-        stage ('Docker Pull') {
-            steps {
-               script {
-                    def buildenv = repolist()
-                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'sudo docker pull rojha63/myapp1', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-                echo 'Docker Image Pulled'
-            }   
-            }
-        }    
-        stage ('Docker Create Cont') {
-            steps {
-               script {
-                    def buildenv = repolist()
-                sshPublisher(publishers: [sshPublisherDesc(configName: buildenv, transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'sudo docker run -p 8080:8080 -d rojha63/myapp1', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: 'webapp/target', sourceFiles: 'webapp/target/*.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-                echo 'Container Created'
-            }   
             }
         }
     }
