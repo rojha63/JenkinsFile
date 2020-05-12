@@ -3,8 +3,7 @@ pipeline {
      tools {
    jdk 'jdk8'
    maven 'maven3'
-   Docker 'docker1'
-  }
+     }
         stages {
           stage('SCM Checkout'){
             steps {
