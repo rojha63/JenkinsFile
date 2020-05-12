@@ -19,7 +19,7 @@ pipeline {
             }
         stage ('Build Docker image') {
              steps {
-                 sh 'sudo docker build -t rojha63/my-app:3.0.0 .'
+                 sh 'docker build -t rojha63/my-app:3.0.0 .'
                 echo 'Docker image build.'
             }
          }
