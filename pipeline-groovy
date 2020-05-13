@@ -17,6 +17,12 @@ pipeline {
                 echo 'Build Compile Successful'
                 }
             }
+         stage ('MVN-Build') {
+            steps {
+                sh 'mvn install'
+                echo 'This is a minimal pipeline.'
+            }
+            }
         stage ('Build Docker image') {
              steps {
                  sh 'pwd'
