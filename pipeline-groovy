@@ -43,6 +43,8 @@ pipeline {
            step {
               kubernetesDeploy configs: 'config', kubeConfig: [path: '/var/jenkins_home/workspace/Pipeline_test'], kubeconfigId: '', secretName: '', ssh: [sshCredentialsId: '*', sshServer: ''], textCredentials: [certificateAuthorityData: '', clientCertificateData: '', clientKeyData: '', serverUrl: 'https://']
               echo 'Login successfull'
+              }
+           }   
     }
 }
 
