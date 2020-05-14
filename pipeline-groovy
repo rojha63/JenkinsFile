@@ -41,7 +41,7 @@ pipeline {
            }
            stage ('Kubernete login'){
            steps {
-              kubernetesDeploy configs: 'config', kubeConfig: [path: '/var/jenkins_home/workspace/Pipeline_test'], kubeconfigId: '', secretName: '', ssh: [sshCredentialsId: '*', sshServer: ''], textCredentials: [certificateAuthorityData: '', clientCertificateData: '', clientKeyData: '', serverUrl: 'https://']
+              kubernetesDeploy configs: 'config', kubeConfig: [path: '/var/jenkins_home/workspace/Pipeline_test/config'], kubeconfigId: '', secretName: '', ssh: [sshCredentialsId: '*', sshServer: ''], textCredentials: [certificateAuthorityData: '', clientCertificateData: '', clientKeyData: '', serverUrl: 'https://']
               echo 'Login successfull'
               }
            }   
