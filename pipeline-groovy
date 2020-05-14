@@ -33,9 +33,9 @@ pipeline {
          stage ('Push Docker image to HUB') {
               steps { withCredential([string(credential: 'DockerHub-Login', variable: 'dockerHubPwd')])
                    sh "sudo docker login -u rojha63 -p ${dockerHubPwd}"
-                   }
-               sh 'sudo docker push rojha63/my-app:5.0.0'
+                   sh 'sudo docker push rojha63/my-app:5.0.0'
                 echo 'Docker image build.'
+           }
            }
     }
 }
