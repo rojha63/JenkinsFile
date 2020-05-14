@@ -36,8 +36,7 @@ pipeline {
                    }
                sh 'sudo docker push rojha63/my-app:5.0.0'
                 echo 'Docker image build.'
-         }
-         }
+           }
     }
 }
 
