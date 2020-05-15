@@ -57,6 +57,11 @@ pipeline {
            steps {
              sh 'kubectl get ns'
                       }
-           }  		   
+           }
+           stage ('Deploy in kubernetes'){
+           steps {
+             sh 'kubectl deploy -f testapp.yaml'
+                      }
+           }  	   		   
     }
 }
