@@ -60,7 +60,7 @@ pipeline {
            }
            stage ('Deploy in kubernetes'){
            steps {
-             sh 'kubectl apply -f testapp.yaml'
+             sh 'kubectl delete -f testapp.yaml'
                       }
            }  	   		   
     }
