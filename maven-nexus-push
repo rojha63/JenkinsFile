@@ -1,0 +1,36 @@
+def loadProperties() {
+    properties = readProperties file: 'pom_xml.properties'
+}
+pipeline {
+    agent (any)
+	 stages {
+        stage ('checkout source code') {
+            steps {
+				script {
+					git branch: 'master', credentialsId: 'rakesh-gitlogin', poll: false, url: 'https://github.com/rojha63/nexus-push.git'
+					gitCommitId=sh(script: "printf `git rev-parse HEAD`", returnStdout: true)
+				}
+            }
+        }
+        stage ('read module') {
+            steps {
+                script {
+                    sh label: '', script: "groovy /opt/scripts/pom_parser.groovy pom.xml"
+                    loadProperties()
+                                    }
+            }
+        }
+        stage ('build module') {
+            steps {
+              sh label: '', script: "sudo su"  
+              sh label: '', script: "sudo mvn --settings /opt/config/settings.xml -f pom.xml clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=true -Djacoco.output=file -Djacoco.destFile=target/jacoco.exec"            
+            }
+        } 
+        stage ('Publish Module to Nexus') {
+            steps {
+               sh label: '', script: "if [[ ${properties.version} == *\"SNAPSHOT\" ]]; then repositoryUrl=http://23.100.21.166:8081/repository/release_repo; repositoryId=nexus-hosted; elif [[ ${properties.version} == *\"RELEASE\" ]]; then repositoryUrl=http://23.100.21.166:8081/repository/release_repo; repositoryId=1234; fi; sudo mvn  --settings /opt/config/settings.xml deploy:deploy-file  -DrepositoryId=1234 -Durl=http://23.100.21.166:8081/repository/release_repo -Dfile=target/${properties.artifactId}-${properties.version}.${properties.packaging} -DgeneratePom=false -DgroupId=${properties.groupId} -Dversion=${properties.version} -DartifactId=${properties.artifactId} -Dbuild.number=${env.BUILD_NUMBER} -DpomFile=pom.xml -Dmaven.wagon.http.ssl.insecure=true"
+            }
+        }   
+		 
+    }
+}	
