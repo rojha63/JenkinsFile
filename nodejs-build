@@ -33,8 +33,15 @@ pipeline {
                    	sh label: '', script: "npm config ls"            
                    	sh label: '', script: "npm run build"
                 }
-					}
+			}
 					
                 }
+        stage('Image Build') {
+			steps { 
+               script { 			
+               sh label: '', script: "sudo docker build -t nginx ."
+         }
+	   }		
+              }        
             }
 		}	
