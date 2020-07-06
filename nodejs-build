@@ -1,0 +1,40 @@
+pipeline {
+    agent ( any )
+	tools {nodejs "nodejs"}
+	stages {
+	   stage ('path set') {
+            steps {
+				script {
+				    env.NODEJS_HOME = "${tool 'nodejs'}"
+					env.PATH="${env.NODEJS_HOME};${env.PATH}"
+					sh 'npm --version'
+				}
+            }
+        } 
+	   stage ('checkout source code') {
+            steps {
+				script {
+					git branch: 'master', credentialsId: 'rakesh-gitlogin', poll: false, url: 'https://github.com/rojha63/nodejs-ui.git'
+					gitCommitId=sh(script: "printf `git rev-parse HEAD`", returnStdout: true)
+				}
+            }
+        }
+	    stage ('downloading modules') {
+		   steps {
+		        script {    
+                        sh label: '', script: 'npm install --build-from-resource'
+                   }
+                }
+            }
+			
+        stage ('building UI') {
+            steps { 
+                script { 			
+                   	sh label: '', script: "npm config ls"            
+                   	sh label: '', script: "npm run build"
+                }
+					}
+					
+                }
+            }
+		}	
