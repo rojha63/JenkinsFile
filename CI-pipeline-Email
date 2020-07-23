@@ -1,0 +1,54 @@
+def Email="rojha63"
+pipeline {
+    agent any
+    stages {      
+       stage ('Azure login') {
+            steps {   
+                withCredentials([azureServicePrincipal('dev-aks')]) { 			
+                sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+             }
+			  echo 'Login successfull'
+        }
+		}
+		stage ('aks login'){
+           steps {
+             sh 'az aks get-credentials --overwrite-existing --resource-group rakesh-rg --name cluster1 --subscription XXXXXXXXXXXXXXX --admin'
+              echo 'AKS Login successfull'
+              }
+           } 
+		stage ('Check name spaces '){
+           steps {
+             sh 'kubectl get ns'
+                      }
+           }
+		stage ('Fetch-application-logs '){
+           steps {
+             sh 'kubectl get pods -n rakesh-ns > pods.txt'
+                      }
+           }   
+        		   
+                 
+        stage ('Azure logout') {
+               steps {
+            	 script {
+                	def logoutResp = sh script: "az logout" , returnStatus: true
+                	echo 'logging out of azure ' + logoutResp
+                }
+            }
+        } 
+    }    
+		post {
+        always {
+            archiveArtifacts artifacts: 'pods.txt', onlyIfSuccessful: true
+            
+            echo 'All the pods detail !'
+                
+            emailext attachLog: true, attachmentsPattern: 'pods.txt',
+                body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                to: '$Email',
+                subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+            
+        }
+    }
+	}
+	
