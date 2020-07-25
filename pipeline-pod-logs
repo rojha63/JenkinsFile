@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+    stages {      
+       stage ('Azure login') {
+            steps {   
+                withCredentials([azureServicePrincipal('dev-aks')]) { 			
+                sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+             }
+			  echo 'Login successfull'
+        }
+		}
+		stage ('aks login'){
+           steps {
+             sh 'az aks get-credentials --overwrite-existing --resource-group rakesh-rg --name cluster1 --subscription XXXXXXXXXXXXXXX --admin'
+              echo 'AKS Login successfull'
+              }
+           } 
+		stage ('Check name spaces '){
+           steps {
+             sh 'kubectl get ns'
+                      }
+           }
+		stage ('Filter-Pod '){
+		    steps {   
+        	script {
+			    sh 'kubectl get pods -n rakesh-ns > logs1.txt' 
+			     env.var1 = '$Microservice'
+			     sh "echo value is ${env.var1}"
+			     sh  '''podname=$(awk \'/'$Microservice'/{print $1}\' logs1.txt)
+			        kubectl logs \$podname -n rakesh-ns >> \$Microservice.txt'''
+			    
+          	
+         	}
+		   }
+		}
+     stage ('Azure logout') {
+               steps {
+            	 script {
+                	def logoutResp = sh script: "az logout" , returnStatus: true
+                	echo 'logging out of azure ' + logoutResp
+                }
+            }
+        } 
+    }
+    	post {
+        always {
+            archiveArtifacts artifacts: '$Microservice.txt', onlyIfSuccessful: true
+            
+            echo 'All the pods detail !'
+                
+            emailext attachLog: true, attachmentsPattern: '$Microservice.txt',
+                body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                to: '$Email',
+                subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+            }
+       } 
+    }
